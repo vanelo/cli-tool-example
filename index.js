@@ -124,15 +124,10 @@ await question1();
 
 function winner(){
     console.clear();
-    const now  = moment().tz("America/asuncion");
-    const month = now.month();
-    const day = now.date();
-    const birthdate = moment(playerBirthdate, "DD/MM/YYYY");
-    const bMonth = birthdate.month();
-    const bDay = birthdate.date();
+    const counterdays = birthdayCounter(playerBirthdate);
     const bMsg = `Feliz cumpleaños ${playerName}!\n`;
-    const isB = (bMonth == month && bDay == day);
-    const msg = isB ? bMsg : `Aun no es tu cumpleaños lol`
+    const isB = counterdays == 0;
+    const msg = isB ? bMsg : `Aun no es tu cumpleaños ${playerName} \n Faltan ${counterdays} dias ! ! !`;
 
     figlet(msg, (err, data) => {
         console.log(gradient.pastel.multiline(data));
@@ -142,3 +137,22 @@ function winner(){
 }
 
 winner();
+
+function birthdayCounter(playerBirthdate){
+    const now  = moment().tz("America/asuncion");
+    const month = now.month() + 1;
+    const day = now.date() + 1;
+    const year = now.year();
+    const birthdate = moment(playerBirthdate, "DD/MM/YYYY");
+    const bMonth = birthdate.month() + 1;
+    const bDay = birthdate.date() + 1;
+    let birthday = moment(`${bDay}/${bMonth}/${year+1}`, "DD/MM/YYYY");
+    if(bMonth > month || ((bMonth == month) && bDay > day)){
+        birthday = moment(`${bDay}/${bMonth}/${year}`, "DD/MM/YYYY");
+    }
+    const counter = Math.abs(birthday.diff(now));
+
+    let counterdays = Math.floor(counter/(1000*60*60*24))
+    if(bMonth == month && bDay == day) counterdays = 0;
+    return counterdays;
+}
